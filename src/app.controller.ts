@@ -44,8 +44,25 @@ export class AppController {
   public buscarPorCategoria(@Query('categoriaCurso') cat:string ) {
     console.log('Entrou no método: buscarPorCategoria ' + new Date());
 
-    return this.appService.buscarPorCategoria(cat);
+    return this.appService.buscarCategorias(cat);
   }
+
+
+  @Get('/categoriaQuantidade')
+  public buscarCategoria(@Query('categoriaCurso') cat:string ) {
+    console.log('Entrou no método: buscarPorCategoriaQuantidade ' + new Date());
+
+    return this.appService.buscarPorCategoriaQuantidade(cat);
+  }
+
+  
+  @Get('/categoria5')
+  public buscarCincoCategorias() {
+    console.log('Entrou no método: buscarPorCategoriaQuantidade ' + new Date());
+
+    return this.appService.buscar5Categorias();
+  }
+
 
   @Post()
   public salvar(@Body() curso: Cursos) {

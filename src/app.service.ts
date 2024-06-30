@@ -5,20 +5,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AppService {
+  constructor(
+    @InjectRepository(Cursos)
+    private cursoRepositorio: Repository<Cursos>,
+  ) {}
 
-  constructor(@InjectRepository(Cursos)
-  private cursoRepositorio:Repository<Cursos>) {
-    
-  }
-
-  public listarTodos(): Promise<Cursos[]>{
+  public listarTodos(): Promise<Cursos[]> {
     return this.cursoRepositorio.find();
   }
-  public listarTodos10(): Promise<Cursos[]>{
+  public listarTodos10(): Promise<Cursos[]> {
     return this.cursoRepositorio.query('SELECT * FROM cursos LIMIT 10');
   }
 
-  public async buscarPorId(id:number): Promise<Cursos> {
+  public async buscarPorId(id: number): Promise<Cursos> {
     const curso = await this.cursoRepositorio.findOneBy({ id });
 
     //Verifica se o cliente existe no banco de dados
@@ -29,23 +28,49 @@ export class AppService {
     return curso;
   }
 
-  public async buscarPorCategoria(categoriaCurso: string): Promise<Cursos[]> {
-    const cursos = await this.cursoRepositorio.findBy({ categoriaCurso });
-  
+  public async buscarPorCategoriaQuantidade(cat: string): Promise<number> {
+    const cursos = await this.cursoRepositorio.query(
+      'SELECT COUNT(*) as QuantidadeCategoria FROM cursos WHERE categoriaCurso = "' +
+        cat +
+        '"',
+    );
+    return cursos;
+  }
+
+  public async buscar5Categorias(): Promise<Cursos[]> {
+    const cursos = await this.cursoRepositorio.query(`SELECT id, categoriaCurso
+FROM (
+    SELECT id, categoriaCurso
+    FROM cursos
+    GROUP BY categoriaCurso  
+) AS subquery
+ORDER BY RAND()
+LIMIT 5;
+`);
+
     if (!cursos || cursos.length === 0) {
       throw new NotFoundException('Nenhum produto encontrado');
     }
-  
+
     return cursos; // Retorna o array de cursos
   }
-  
 
-  public async salvar(curso:Cursos): Promise<Cursos>{
+  public async buscarCategorias(categoriaCurso: string): Promise<Cursos[]> {
+    const cursos = await this.cursoRepositorio.findBy({ categoriaCurso });
+
+    if (!cursos || cursos.length === 0) {
+      throw new NotFoundException('Nenhum produto encontrado');
+    }
+
+    return cursos; // Retorna o array de cursos
+  }
+
+  public async salvar(curso: Cursos): Promise<Cursos> {
     const novoCurso = await this.cursoRepositorio.save(curso);
     return novoCurso;
   }
 
-  public async atualizar(id:number, curso:Cursos): Promise<Cursos>{
+  public async atualizar(id: number, curso: Cursos): Promise<Cursos> {
     const editCurso = await this.cursoRepositorio.findOneBy({ id });
 
     //Verifica se o produto existe no banco de dados
@@ -61,7 +86,6 @@ export class AppService {
     editCurso.imgCurso = curso.imgCurso;
     editCurso.categoriaCurso = curso.categoriaCurso;
 
-
     //Salva as alterações
     await this.cursoRepositorio.save(editCurso);
 
@@ -69,7 +93,7 @@ export class AppService {
     return editCurso;
   }
 
-  public async excluir(id:number): Promise<void>{
-    await this.cursoRepositorio.delete(id)
+  public async excluir(id: number): Promise<void> {
+    await this.cursoRepositorio.delete(id);
   }
 }
