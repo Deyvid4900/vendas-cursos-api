@@ -14,7 +14,25 @@ export class AppService {
     return this.cursoRepositorio.find();
   }
   public listarTodos10(): Promise<Cursos[]> {
-    return this.cursoRepositorio.query('SELECT * FROM cursos LIMIT 10');
+    return this.cursoRepositorio.query(
+      'SELECT * FROM cursos order by rand() LIMIT 10',
+    );
+  }
+  public listar10MelhoresCursos(): Promise<Cursos[]> {
+    return this.cursoRepositorio.query(
+      `
+      SELECT *
+FROM (
+    SELECT *
+    FROM cursos
+    WHERE mediapontuacao > 6
+    ORDER BY RAND()
+    LIMIT 10
+) AS subquery
+ORDER BY  mediaPontuacao desc;
+
+      `,
+    );
   }
 
   public async buscarPorId(id: number): Promise<Cursos> {

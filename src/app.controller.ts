@@ -32,6 +32,13 @@ export class AppController {
 
     return this.appService.listarTodos10();
   }
+  @Get('/cursos/melhores')
+  listar10MelhoresCursos() {
+    console.log('Entrou no método: listarTodosCursos ' + new Date());
+
+    return this.appService.listar10MelhoresCursos();
+  }
+
 
   @Get('/curso')
   public buscarPorId(@Query('id') id: number) {
