@@ -3,6 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cursos} from './models/cursos';
+import {  Usuarios  as Clientes} from './models/usuarios';
+import { UserControllerController } from './user-controller/user-controller.controller';
+import { AppServiceUser } from './user-controller/user-controller.service';
+import { AuthModule } from './auth/auth.module';
+
 
 @Module({
   imports: [
@@ -13,13 +18,14 @@ import { Cursos} from './models/cursos';
       username: 'root',
       password: '',
       database: 'emeb_db',
-      entities: [Cursos],
+      entities: [Cursos,Clientes],
       synchronize: false,
       logging: true,
     }),
-    TypeOrmModule.forFeature([Cursos]),
+    TypeOrmModule.forFeature([Cursos,Clientes]),
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, UserControllerController],
+  providers: [AppService, AppServiceUser],
 })
 export class AppModule {}

@@ -71,7 +71,7 @@ export class AppController {
   }
 
 
-  @Post()
+  @Post('/curso')
   public salvar(@Body() curso: Cursos) {
     console.log('Entrou no método: salvar');
 
